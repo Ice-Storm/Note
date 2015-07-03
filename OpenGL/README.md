@@ -1,0 +1,1 @@
+This is a note directory of OpenGL, most work in Qt5.4, OpenGL2 or 3.

@@ -93,7 +93,8 @@ bin
     url = git@gitcafe.com:dragon/test.git
 这样，使用git push all即可一键Push到多个远程仓库中。
 ```
-
+#git flow
+安装git-flow，git flow 规范了使用git 协作开发的流程。
 
 #### 参考文章
 

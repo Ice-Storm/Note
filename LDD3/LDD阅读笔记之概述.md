@@ -164,12 +164,14 @@ EXPORT_SYMBOL_GPL(name);
 #预备知识
 
 所有的模块都要包含以下代码：
+
 ```c
 #include <linux/module.h>
 #include <linux/init.h>
 ```
 
 尽管不是严格要求的，但是模块应该指定代码所使用的许可证
+
 ```c
 MODULE_LICENSE("GPL");
 ```

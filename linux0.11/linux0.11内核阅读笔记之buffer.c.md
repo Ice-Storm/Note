@@ -46,6 +46,7 @@ int sys_sync(void)
 ```
 
 以下代码来自inode.c
+
 ```c
 void sync_incdes(void)
 {

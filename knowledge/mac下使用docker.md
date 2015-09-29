@@ -39,3 +39,4 @@ $ boot2docker -v info
 $ sudo boot2docker -v info   #第一个命令不行再使用
 ```  
 根据得到的环境变量判断Virtual Box的设置可能存在的问题，调整Virtual Box的设置，然后重装boot2docker，这是目前比较有效的解决方案。
+

@@ -25,7 +25,8 @@ command+`   切换同一程序下的窗口
     brew cleanup
 
 #brew cask
-brew cask是brew下的gui管理软件，可以替代mac store使用，方便软件的安装和卸载
+brew cask是brew下的gui管理软件，可以替代mac store使用，方便软件的安装和卸载。
+要在brew cask下升级软件，直接使用cask卸载软件，再安装软件，就能升级。
 
 #dash
 mac下非常好用的编程文档查看器，程序员必备，付费软件。

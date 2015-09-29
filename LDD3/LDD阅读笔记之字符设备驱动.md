@@ -1,6 +1,8 @@
 LDD3阅读笔记-字符设备驱动
 =======================
 
+![char-dev][2]
+
 #主要开发流程介绍
 
 module_init宏和module_exit宏
@@ -75,6 +77,7 @@ int alloc_chrdev_region(dev_t *dev, unsigned int firstminor,
 ```c
 void unregister_chrdev_region(dev_t first, unsigned int count);
 ```
+
 通常我们在清除模块中调用 *unregister_chrdev_region* 函数。
 
 #一些重要的数据结构
@@ -86,11 +89,11 @@ void unregister_chrdev_region(dev_t first, unsigned int count);
 ```c   
 struct file_operations {
     struct module *owner;
-     loff_t(*llseek) (struct file *, loff_t, int);
-     ssize_t(*read) (struct file *, char __user *, size_t, loff_t *);
-     ssize_t(*aio_read) (struct kiocb *, char __user *, size_t, loff_t);
-     ssize_t(*write) (struct file *, const char __user *, size_t, loff_t *);
-     ssize_t(*aio_write) (struct kiocb *, const char __user *, size_t,
+    loff_t(*llseek) (struct file *, loff_t, int);
+    ssize_t(*read) (struct file *, char __user *, size_t, loff_t *);
+    ssize_t(*aio_read) (struct kiocb *, char __user *, size_t, loff_t);
+    ssize_t(*write) (struct file *, const char __user *, size_t, loff_t *);
+    ssize_t(*aio_write) (struct kiocb *, const char __user *, size_t,
                   loff_t);
     int (*readdir) (struct file *, void *, filldir_t);
     unsigned int (*poll) (struct file *, struct poll_table_struct *);
@@ -104,13 +107,13 @@ struct file_operations {
     int (*aio_fsync) (struct kiocb *, int datasync);
     int (*fasync) (int, struct file *, int);
     int (*lock) (struct file *, int, struct file_lock *);
-     ssize_t(*readv) (struct file *, const struct iovec *, unsigned long,
+    ssize_t(*readv) (struct file *, const struct iovec *, unsigned long,
               loff_t *);
-     ssize_t(*writev) (struct file *, const struct iovec *, unsigned long,
+    ssize_t(*writev) (struct file *, const struct iovec *, unsigned long,
                loff_t *);
-     ssize_t(*sendfile) (struct file *, loff_t *, size_t, read_actor_t,
+    ssize_t(*sendfile) (struct file *, loff_t *, size_t, read_actor_t,
                  void __user *);
-     ssize_t(*sendpage) (struct file *, struct page *, int, size_t,
+    ssize_t(*sendpage) (struct file *, struct page *, int, size_t,
                  loff_t *, int);
     unsigned long (*get_unmapped_area) (struct file *, unsigned long,
                         unsigned long, unsigned long,
@@ -334,6 +337,7 @@ unsigned long copy_from_user(void *to,
                              const void __user *from,
                              unsigned long count);
 ```
+
 当内核空间运行的代码访问用户空间的时候必须多加小心，因为被寻址的用户页面
 可能不存在当前内存中，于是虚拟内存子系统经该进程转入休眠，知道该页面被加载
 到期望位置。对驱动开发人员来说，这带来的结果就是任何访问用户空间的函数都是
@@ -361,6 +365,7 @@ struct iovec {
     __kernel_size_t iov_len;
 }
 ```
+
 每个iovec结构都描述了一个用于传输的数据块。函数中的count参数指明要操作多少
 个iovec结构。
 正确而有效率的操作经常需要驱动程序做一些更为巧妙的事情。
@@ -370,218 +375,218 @@ struct iovec {
 #实例
 
 ```c
-    /*
-     * =====================================================================================
-     *
-     *       Filename:  scull.c
-     *
-     *    Description:  this is a first driver from ldd3
-     *                  ignore mutithread race, data overflow,
-     *                  just a simple example.
-     *
-     *        Version:  1.0
-     *        Created:  11/29/2014 09:00:04 PM
-     *       Revision:  none
-     *       Compiler:  gcc
-     *
-     *         Author:  Xu Jianjun(firemiles), 
-     *   Organization:  
-     *
-     * =====================================================================================
-     */
-    #include <linux/module.h>
-    #include <linux/init.h>
-    #include <linux/fs.h>
-    #include <linux/cdev.h>
-    #include <linux/uaccess.h>
-    #include <linux/slab.h>
+/*
+ * =====================================================================================
+ *
+ *       Filename:  scull.c
+ *
+ *    Description:  this is a first driver from ldd3
+ *                  ignore mutithread race, data overflow,
+ *                  just a simple example.
+ *
+ *        Version:  1.0
+ *        Created:  11/29/2014 09:00:04 PM
+ *       Revision:  none
+ *       Compiler:  gcc
+ *
+ *         Author:  Xu Jianjun(firemiles), 
+ *   Organization:  
+ *
+ * =====================================================================================
+ */
+#include <linux/module.h>
+#include <linux/init.h>
+#include <linux/fs.h>
+#include <linux/cdev.h>
+#include <linux/uaccess.h>
+#include <linux/slab.h>
 
-    MODULE_LICENSE("GPL");
+MODULE_LICENSE("GPL");
 
-    static long scull_ioctl (struct file *file, unsigned int cmd, unsigned long n);
-    static ssize_t scull_write (struct file *file, const char __user *buff, 
-                            size_t count, loff_t *f_ops );
-    static ssize_t scull_read (struct file *file, char __user *buff, 
-                            size_t count, loff_t *f_ops );
-    static loff_t scull_llseek (struct file *file, loff_t f_ops, int count);
-    static int scull_release (struct inode *inode, struct file *file );
-    static int scull_open (struct inode *inode, struct file *file );
+static long scull_ioctl (struct file *file, unsigned int cmd, unsigned long n);
+static ssize_t scull_write (struct file *file, const char __user *buff, 
+                        size_t count, loff_t *f_ops );
+static ssize_t scull_read (struct file *file, char __user *buff, 
+                        size_t count, loff_t *f_ops );
+static loff_t scull_llseek (struct file *file, loff_t f_ops, int count);
+static int scull_release (struct inode *inode, struct file *file );
+static int scull_open (struct inode *inode, struct file *file );
 
-    static int scull_major = 0;
-    static int scull_minor = 0;
+static int scull_major = 0;
+static int scull_minor = 0;
 
-    struct scull_dev {
-        char *data;
-        size_t maxlen; //buffer length
-        size_t len;    //data length
-        struct  cdev cdev;
-    }scull_dev1;
-
-
-    struct file_operations scull_fops = {
-        .owner  =   THIS_MODULE,
-        .llseek =   scull_llseek,
-        .read   =   scull_read,
-        .write  =   scull_write,
-        .unlocked_ioctl  =   scull_ioctl, //new api
-        .open   =   scull_open,
-        .release=   scull_release,
-    };
-
-    /* 
-     * ===  FUNCTION  ======================================================================
-     *         Name:  scull open
-     *  Description:  
-     * =====================================================================================
-     */
-    static int scull_open (struct inode *inode, struct file *filp )
-    {
-        struct scull_dev *dev;
-        dev = container_of(inode->i_cdev, struct scull_dev, cdev);
-        filp->private_data = dev;
-        if(dev->data == NULL){
-            dev->data = (char *)kmalloc(1024, GFP_KERNEL);
-            dev->maxlen = 1024;
-            dev->len = 0;
-        }
-        return 0;
-    }       /* -----  end of function scull open  ----- */
+struct scull_dev {
+    char *data;
+    size_t maxlen; //buffer length
+    size_t len;    //data length
+    struct  cdev cdev;
+}scull_dev1;
 
 
-    /* 
-     * ===  FUNCTION  ======================================================================
-     *         Name:  scull_close
-     *  Description:  
-     * =====================================================================================
-     */
-    static int scull_release (struct inode *inode, struct file *filp )
-    {
-        return 0;
-    }       /* -----  end of function scull_close  ----- */
+struct file_operations scull_fops = {
+    .owner  =   THIS_MODULE,
+    .llseek =   scull_llseek,
+    .read   =   scull_read,
+    .write  =   scull_write,
+    .unlocked_ioctl  =   scull_ioctl, //new api
+    .open   =   scull_open,
+    .release=   scull_release,
+};
 
-
-
-    /* 
-     * ===  FUNCTION  ======================================================================
-     *         Name:  scull_llseek
-     *  Description:  
-     * =====================================================================================
-     */
-    static loff_t scull_llseek (struct file *file, loff_t f_ops, int count)
-    {
-        return 0;
-    }       /* -----  end of function scull_llseek  ----- */
-
-    /* 
-     * ===  FUNCTION  ======================================================================
-     *         Name:  scull_read
-     *  Description:  
-     * =====================================================================================
-     */
-    static ssize_t scull_read (struct file *filp, char __user *buff, size_t count, loff_t *f_ops )
-    {
-        int num;
-        struct scull_dev *dev = filp->private_data;
-        copy_to_user(buff, dev->data, dev->len); // ignore buff overflow;
-        num = dev->len;
+/* 
+ * ===  FUNCTION  ======================================================================
+ *         Name:  scull open
+ *  Description:  
+ * =====================================================================================
+ */
+static int scull_open (struct inode *inode, struct file *filp )
+{
+    struct scull_dev *dev;
+    dev = container_of(inode->i_cdev, struct scull_dev, cdev);
+    filp->private_data = dev;
+    if(dev->data == NULL){
+        dev->data = (char *)kmalloc(1024, GFP_KERNEL);
+        dev->maxlen = 1024;
         dev->len = 0;
-        return num;
-    }       /* -----  end of function scull_read  ----- */
+    }
+    return 0;
+}       /* -----  end of function scull open  ----- */
 
 
-    /* 
-     * ===  FUNCTION  ======================================================================
-     *         Name:  scull_write
-     *  Description:  
-     * =====================================================================================
-     */
-    static ssize_t scull_write (struct file *filp, const char __user *buff, size_t count, loff_t *f_ops )
-    {
-        struct scull_dev *dev = filp->private_data;
-        copy_from_user(dev->data, buff, count); // ignore data overflow; 
-        dev->len = count;
-        return count;
-    }       /* -----  end of function scull_write  ----- */
+/* 
+ * ===  FUNCTION  ======================================================================
+ *         Name:  scull_close
+ *  Description:  
+ * =====================================================================================
+ */
+static int scull_release (struct inode *inode, struct file *filp )
+{
+    return 0;
+}       /* -----  end of function scull_close  ----- */
 
 
-    /* 
-     * ===  FUNCTION  ======================================================================
-     *         Name:  scull_ioctl
-     *  Description:  
-     * =====================================================================================
-     */
-    static long scull_ioctl (struct file *file, unsigned int cmd, unsigned long n)
-    {
-        return 0;
-    }       /* -----  end of function scull_ioctl  ----- */
+
+/* 
+ * ===  FUNCTION  ======================================================================
+ *         Name:  scull_llseek
+ *  Description:  
+ * =====================================================================================
+ */
+static loff_t scull_llseek (struct file *file, loff_t f_ops, int count)
+{
+    return 0;
+}       /* -----  end of function scull_llseek  ----- */
+
+/* 
+ * ===  FUNCTION  ======================================================================
+ *         Name:  scull_read
+ *  Description:  
+ * =====================================================================================
+ */
+static ssize_t scull_read (struct file *filp, char __user *buff, size_t count, loff_t *f_ops )
+{
+    int num;
+    struct scull_dev *dev = filp->private_data;
+    copy_to_user(buff, dev->data, dev->len); // ignore buff overflow;
+    num = dev->len;
+    dev->len = 0;
+    return num;
+}       /* -----  end of function scull_read  ----- */
 
 
-    /* 
-     * ===  FUNCTION  ======================================================================
-     *         Name:  scull_setup_cdev
-     *  Description:  
-     * =====================================================================================
-     */
-    static void scull_setup_cdev (struct scull_dev *dev, int index)
-    {
-        int err;
-        dev_t devnum;
-        char name[16];
-        sprintf(name,"scull1");
-        if(scull_major){
-            devnum = MKDEV(scull_major, scull_minor+index);
-            err = register_chrdev_region(devnum, 1, name);
-        }else{
-            err = alloc_chrdev_region(&devnum, scull_minor+index, 1, name);
-            scull_major = MAJOR(devnum);
-        }
-        if(err<0){
-            printk(KERN_WARNING "scull1: can't get major %d\n", scull_major);
-            return;
-        }
-        cdev_init(&dev->cdev, &scull_fops);
-        dev->cdev.owner = THIS_MODULE;
-        dev->cdev.ops = &scull_fops; //nessary?
-        err = cdev_add(&dev->cdev, devnum, 1);
-        if(err){
-            printk(KERN_NOTICE "Error %d adding scull%d", err, index);
-        }
-    }       /* -----  end of function scull_setup_cdev  ----- */
-
-    /*  
-     * ===  FUNCTION  ======================================================================
-     *         Name:  scull_init
-     *  Description:  
-     * =====================================================================================
-     */
-    static int __init scull_init (void)
-    {
-        scull_setup_cdev(&scull_dev1, 1);
-        printk(KERN_ALERT "scull init\n");
-        return 0;
-    }       /* -----  end of function scull_init  ----- */
+/* 
+ * ===  FUNCTION  ======================================================================
+ *         Name:  scull_write
+ *  Description:  
+ * =====================================================================================
+ */
+static ssize_t scull_write (struct file *filp, const char __user *buff, size_t count, loff_t *f_ops )
+{
+    struct scull_dev *dev = filp->private_data;
+    copy_from_user(dev->data, buff, count); // ignore data overflow; 
+    dev->len = count;
+    return count;
+}       /* -----  end of function scull_write  ----- */
 
 
-    /* 
-     * ===  FUNCTION  ======================================================================
-     *         Name:  scull_exit
-     *  Description:  
-     * =====================================================================================
-     */
-    static void __exit scull_exit (void)
-    {
-        kfree(scull_dev1.data);
-        unregister_chrdev_region(scull_dev1.cdev.dev, 1);
-        cdev_del(&scull_dev1.cdev);
-        printk(KERN_ALERT "scull exit\n");
-    }       /* -----  end of function scull_exit  ----- */
-    /* this macro told to compiler.
-     * that the two function are init function and exit function
-     * 
-     */
+/* 
+ * ===  FUNCTION  ======================================================================
+ *         Name:  scull_ioctl
+ *  Description:  
+ * =====================================================================================
+ */
+static long scull_ioctl (struct file *file, unsigned int cmd, unsigned long n)
+{
+    return 0;
+}       /* -----  end of function scull_ioctl  ----- */
 
-    module_init(scull_init);
-    module_exit(scull_exit);
+
+/* 
+ * ===  FUNCTION  ======================================================================
+ *         Name:  scull_setup_cdev
+ *  Description:  
+ * =====================================================================================
+ */
+static void scull_setup_cdev (struct scull_dev *dev, int index)
+{
+    int err;
+    dev_t devnum;
+    char name[16];
+    sprintf(name,"scull1");
+    if(scull_major){
+        devnum = MKDEV(scull_major, scull_minor+index);
+        err = register_chrdev_region(devnum, 1, name);
+    }else{
+        err = alloc_chrdev_region(&devnum, scull_minor+index, 1, name);
+        scull_major = MAJOR(devnum);
+    }
+    if(err<0){
+        printk(KERN_WARNING "scull1: can't get major %d\n", scull_major);
+        return;
+    }
+    cdev_init(&dev->cdev, &scull_fops);
+    dev->cdev.owner = THIS_MODULE;
+    dev->cdev.ops = &scull_fops; //nessary?
+    err = cdev_add(&dev->cdev, devnum, 1);
+    if(err){
+        printk(KERN_NOTICE "Error %d adding scull%d", err, index);
+    }
+}       /* -----  end of function scull_setup_cdev  ----- */
+
+/*  
+ * ===  FUNCTION  ======================================================================
+ *         Name:  scull_init
+ *  Description:  
+ * =====================================================================================
+ */
+static int __init scull_init (void)
+{
+    scull_setup_cdev(&scull_dev1, 1);
+    printk(KERN_ALERT "scull init\n");
+    return 0;
+}       /* -----  end of function scull_init  ----- */
+
+
+/* 
+ * ===  FUNCTION  ======================================================================
+ *         Name:  scull_exit
+ *  Description:  
+ * =====================================================================================
+ */
+static void __exit scull_exit (void)
+{
+    kfree(scull_dev1.data);
+    unregister_chrdev_region(scull_dev1.cdev.dev, 1);
+    cdev_del(&scull_dev1.cdev);
+    printk(KERN_ALERT "scull exit\n");
+}       /* -----  end of function scull_exit  ----- */
+/* this macro told to compiler.
+ * that the two function are init function and exit function
+ * 
+ */
+
+module_init(scull_init);
+module_exit(scull_exit);
 ```
 
 
@@ -589,3 +594,4 @@ struct iovec {
 
 
 [1]: image/The_arguments_to_read.png
+[2]: image/chr-dev.png

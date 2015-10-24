@@ -267,5 +267,6 @@ insmod hellop howmany=10 whom="Mom"
  不常见的硬件时，在用户空间研究如何管理这个设备而不用担心挂起
  整个设备。
 
-[1]: image/a_split_view_of_the_kernel.png
-[2]: image/stacking_of_parallel_port_driver_modules.png
+[1]: images/a_split_view_of_the_kernel.png
+[2]: images/stacking_of_parallel_port_driver_modules.png
+

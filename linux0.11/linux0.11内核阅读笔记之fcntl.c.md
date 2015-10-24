@@ -4,7 +4,7 @@
 
 由AT&T的系统开始采用fcntl()函数主要用于修改已打开文件的属性。函数dup(fd)就等效于fcntl(fd,F_DUPFD,0);而函数dup2(fd,newfd)则等效于语句
 “close(newfd);fcntl(fd,F_DUPFD,newfd);”
-![](image/执行dup或dup2函数后内核中的文件相关结构.png)
+![](images/执行dup或dup2函数后内核中的文件相关结构.png)
 
 ```C
 //fd是想要复制的文件描述符，arg是指定的最小文件描述符。
@@ -58,3 +58,4 @@ int sys_fcntl(unsigned int fd, unsigned int cmd, unsigned long arg)
     }
 }
 ```
+

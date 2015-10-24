@@ -17,7 +17,7 @@ static inline void wait_on_buffer(struct buffer_head *bh)
 
 内核程序对**块设备**的访问都要经过高速缓冲这一环节，除驱动程序以外，内
 核其他上层程序对**块设备**的读写操作需要经过高速缓冲区管理程序来间接实现。
-![](image/内核程序块设备访问操作.png)
+![](images/内核程序块设备访问操作.png)
 
 对于更新和同步操作，其主要作用是让内存中的一些缓冲块内容与磁盘等块设
 备上的信息一致。sync_inodes()的主要作用是吧i节点表inode_table中的一
@@ -61,3 +61,4 @@ void sync_incdes(void)
 
 }
 ```
+

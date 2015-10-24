@@ -593,5 +593,7 @@ module_exit(scull_exit);
 
 
 
-[1]: image/The_arguments_to_read.png
-[2]: image/chr-dev.png
+[1]: images/The_arguments_to_read.png
+[2]: images/chr-dev.png
+
+

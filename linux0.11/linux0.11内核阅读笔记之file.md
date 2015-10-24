@@ -12,13 +12,13 @@
 block_dev.c char_dev.c pipe.c file_dev.c和read_write.c
 前4个程序为read_write.c提供服务，主要实现了文件系统的数据访问
 操作。
-![](image/各种类型文件与文件系统和系统调用的接口函数.png)
+![](images/各种类型文件与文件系统和系统调用的接口函数.png)
 
 ##block_dev.c
 block_dev.c程序属于块设备文件数据访问操作类程序。包括block_read()和
 block_write()两个块设备读写函数，分别用来直接读写块设备上的原始数据。
 （其实是在高速缓冲区中进行）
-![](image/块数据读写操作指针位置示意图.png)
+![](images/块数据读写操作指针位置示意图.png)
 
 ##file_dev.c
 该文件包括file_read()和file_write()两个函数。也是供系统调用函数read()
@@ -29,7 +29,7 @@ block_write()两个块设备读写函数，分别用来直接读写块设备上�
 同时实现了管道系统调用sys_pipe()。
 创建并初始化管道时，程序会专门申请一个管道i节点，并为管道分配一页缓冲区（
 4KB)。
-![](image/管道缓冲区操作示意图.png)
+![](images/管道缓冲区操作示意图.png)
 
 对于读管道操作，数据从管道尾读出，并使管道尾指针前移读取字节数个位置；对于
 往管道中的写入操作，数据是想管道头部写入，并使管道头指针前移写入字节数个位
@@ -147,3 +147,5 @@ int read(int fd, char *buf, off_t count)
 	return -1;
 }
 ```
+
+

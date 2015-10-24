@@ -27,7 +27,7 @@ for root, dirs, files in os.walk('./', topdown=False):
         # 排除隐藏文件夹和 images 文件夹
         if len(re.findall('^\.|^images$', d)) > 0:
             continue
-        index.write('* [%s](%s/index.md)\n' % (d, d))
+        index.write('* [%s](%s/index.md)\n' % (d, d.lower()))
     index.write('\n' + '-'*20 + '\n\n')
     for f in files:
         if f == 'index.md' or f.strip() == '':
@@ -35,4 +35,4 @@ for root, dirs, files in os.walk('./', topdown=False):
         # 排除隐藏文件
         if len(re.findall('^\.', f)) > 0:
             continue        
-        index.write('* [%s](%s)\n' % (f.split('.')[0], f))
+        index.write('* [%s](%s)\n' % (f.split('.')[0], f.lower()))

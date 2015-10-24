@@ -93,9 +93,26 @@ bin
     url = git@gitcafe.com:dragon/test.git
 这样，使用git push all即可一键Push到多个远程仓库中。
 ```
+## Git大小写文件名敏感
+由于 Mac 和 Windows 下文件大小写不敏感，造成 git 下如果改了名字，譬如小写改大写，推送到 linux 服务器的时候会没有效果，Github 上也是小写。
+
+所以，如果在 mac 上改文件名，需要用下面的命令
+
+```
+git mv --force myfile MyFile
+```
+
+ 或
+ 
+```
+git config core.ignorecase false 
+# 开启大小写敏感（默认关闭，保持但不改变大小写）
+```
+
 #git flow
 安装git-flow，git flow 规范了使用git 协作开发的流程。
 
-#### 参考文章
+# 参考文章
 
 [Git常用操作命令](http://rongjih.blog.163.com/blog/static/335744612010112562833316/)
+

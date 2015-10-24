@@ -19,16 +19,18 @@ for root, dirs, files in os.walk('./', topdown=False):
         # if 'index.md' in files:
         # 	os.unlink(root+'/index.md')
         continue
-    index = open(root + '/INDEX.md', 'w')
+    # 去除同名文件（如果已经有同名但是大小写不同，文件名不会程序被改变）
+    os.unlink(root + '/index.md')
+    index = open(root + '/index.md', 'w')
     index.write(Head)
     for d in dirs:
         # 排除隐藏文件夹和 images 文件夹
         if len(re.findall('^\.|^images$', d)) > 0:
             continue
-        index.write('* [%s](%s/INDEX.md)\n' % (d, d))
+        index.write('* [%s](%s/index.md)\n' % (d, d))
     index.write('\n' + '-'*20 + '\n\n')
     for f in files:
-        if f == 'INDEX.md' or f.strip() == '':
+        if f == 'index.md' or f.strip() == '':
             continue
         # 排除隐藏文件
         if len(re.findall('^\.', f)) > 0:

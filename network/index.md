@@ -1,9 +1,9 @@
 Index
 =====
 
-* [flask](flask/INDEX.md)
-* [nginx](nginx/INDEX.md)
-* [TCP-IP](TCP-IP/INDEX.md)
+* [flask](flask/index.md)
+* [nginx](nginx/index.md)
+* [TCP-IP](TCP-IP/index.md)
 
 --------------------
 

@@ -1,22 +1,22 @@
 Index
 =====
 
-* [Android](Android/INDEX.md)
-* [APUE](APUE/INDEX.md)
-* [C++](C++/INDEX.md)
-* [Io](Io/INDEX.md)
-* [Knowledge](Knowledge/INDEX.md)
-* [LaTex](LaTex/INDEX.md)
-* [LDD3](LDD3/INDEX.md)
-* [Linux0.11](Linux0.11/INDEX.md)
-* [Network](Network/INDEX.md)
-* [OpenGL](OpenGL/INDEX.md)
-* [Prolog](Prolog/INDEX.md)
-* [Python](Python/INDEX.md)
-* [Ruby](Ruby/INDEX.md)
-* [Scala](Scala/INDEX.md)
-* [编译原理](编译原理/INDEX.md)
-* [设计模式](设计模式/INDEX.md)
+* [Android](Android/index.md)
+* [APUE](APUE/index.md)
+* [C++](C++/index.md)
+* [Io](Io/index.md)
+* [Knowledge](Knowledge/index.md)
+* [LaTex](LaTex/index.md)
+* [LDD3](LDD3/index.md)
+* [Linux0.11](Linux0.11/index.md)
+* [Network](Network/index.md)
+* [OpenGL](OpenGL/index.md)
+* [Prolog](Prolog/index.md)
+* [Python](Python/index.md)
+* [Ruby](Ruby/index.md)
+* [Scala](Scala/index.md)
+* [编译原理](编译原理/index.md)
+* [设计模式](设计模式/index.md)
 
 --------------------
 

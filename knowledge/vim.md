@@ -7,3 +7,5 @@ Vim在git commit时出错，
     
     git config --global core.editor /usr/bin/vim
 显示指定git的编辑器。
+
+>熟练使用Vim大部分时间处于normal模式。

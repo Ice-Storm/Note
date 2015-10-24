@@ -33,29 +33,33 @@
 Linux内核遵守上述语义提供了信号量的是实现，然而在术语上存在一些差异。要使用信号量，内核代码必须包括<asm/semaphore.h>。想关的类型是struct semaphore；实际的信号量可通过几种途径来声明和初始化。其中之一是直接创建信号量，这通过sema_init完成：
 
 ```c    
-    void sema_init(struct semaphore,*sem, int val);
+    void sema_init(struct semaphore, * sem, int val);
 ```
+
 其中val是赋予一个信号量的初始值，不过信号量常被用于互斥模式，内核提供了辅助函数和宏。
 
 ```c
     DECLARE_MUTEX(name);
     DECLARE_MUTEX_LOCDED(naem);
 ```
+
 一个称为name的信号量变量初始化为1（使用DECLARE_MUTEX）或者0（DECLARE_MUTEX_LOCKED）。
 
 如果互斥体必须在运行时被初始化，应使用下面的函数之一：
 
 ```c
-    void init_MUTEX(struct semaphore *sem);
-    void init_MUTEX_LOCKED(struct semaphore *sem);
+    void init_MUTEX(struct semaphore * sem);
+    void init_MUTEX_LOCKED(struct semaphore * sem);
 ```
+
 在Linux世界中，P函数被称为down——或者这个名字的其他变种。
 
 ```c
-    void down(struct semaphore *sem);
-    int down_interruptible(struct semaphore *sem);
-    int down_trylock(struct semaphore *sem);
+    void down(struct semaphore * sem);
+    int down_interruptible(struct semaphore * sem);
+    int down_trylock(struct semaphore * sem);
 ```
+
 down减少信号量的值，并在必要时一直等待。down_interruptible完成相同工作，但是操作可中断。**可中断版本几乎是我们始终要使用的版本**，它允许等待在某个信号量上的用户空间进程 **可被用户中断**。非中断操作是建立不可杀进程(ps输出中的"D state")的好方法，但会让用户感到懊恼。使用可中断操作需要额外小心，如果操作被中断，该函数会返回0值，而调用这不会拥有该信号量。对down_interruptible的正确使用需要始终检查返回值，并作出相应的响应。
 
 >注意：这里的interruptible指的是用户可以发信号中断，uninterrputible指的是用户不可以发信号中断，但是内核可以中断它，否则系统会死锁。
@@ -65,8 +69,9 @@ down减少信号量的值，并在必要时一直等待。down_interruptible完�
 当互斥操作完成后，必须返回信号量，Linux等价于V函数的操作时up:
 
 ```c
-void up(struct semaphore *sem);
+void up(struct semaphore * sem);
 ```
+
 调用up后，调用者不再拥有该信号量。任何拿到信号量的线程都必须通过一次（只有一次）对up的调用而释放信号量。如果在拥有一个信号量时发生错误，必须在将错误状态返回给调用者之前释放。
 
 ##读取者/写入者信号量
@@ -76,23 +81,25 @@ Linux内核为这种情况提供了一种特殊的信号量类型，称为"rwsem
 
 使用rwsem必须包含<linux/rwsem.h>。相关的数据类型是struct rw_semaphore；一个rwsem对象必须运行时通过下面的函数显式初始化：
 
-    void init_rwsem(struct rw_semaphore *sem);
+    void init_rwsem(struct rw_semaphore * sem);
 
 初始化的rwsem才可以使用。
 
 ```c
-    void down_read(struct rw_semaphore *sem);
-    int down_read_trylock(struct rw_semaphore *sem);
-    void up_read(struct rw_semaphore *sem);
+    void down_read(struct rw_semaphore * sem);
+    int down_read_trylock(struct rw_semaphore * sem);
+    void up_read(struct rw_semaphore * sem);
 ```
+
 针对写入者的接口类似于读取者接口：
 
 ```c
-    void down_write(struct rw_semaphore *sem);
-    int down_write_trylock(struct rw_semaphore *sem);
-    void up_write(struct rw_semahore *sem);
-    void downgrade_write(struct rw_semaphore *sem);
+    void down_write(struct rw_semaphore * sem);
+    int down_write_trylock(struct rw_semaphore * sem);
+    void up_write(struct rw_semahore * sem);
+    void downgrade_write(struct rw_semaphore * sem);
 ```
+
 当某个快速改变获得了写入者锁，而其后是更长时间的只读访问的话我们可以在结束修改之后调用downgrade_write，来允许其他读取者的访问。
 
 一个rwsem可允许一个写入者或无限多个读取者拥有该信号量。写入者拥有更高的优先级；如果有大量的写入者竞争该信号量，这种实现会导致读取者“饿死”，即长期拒绝读取者的访问，因此最好在需要写访问很少且写入者只会短期拥有信号量的时候使用rwsem。
@@ -116,16 +123,18 @@ Linux内核为这种情况提供了一种特殊的信号量类型，称为"rwsem
 要等待completion，可进行以下调用：
 
 ```c
-    void wait_for_completion(struct completion *c);
+    void wait_for_completion(struct completion * c);
 ```
+
 该函数执行一个非中断调用，如果没人完成该任务，等待一直不返回，则将产生一个不可杀进程。wait_for_completion等待在completion上。如果加了interruptible，就表示线程等待可被外部发来的信号打断；如果加了killable，就表示线程只可被kill信号打断；如果加了timeout，表示等待超出一定时间会自动结束等待，timeout的单位是系统所用的时间片jiffies(多为1ms)。
 
 另一方面，实际的completion事件可以通过调用下面函数之一来触发：
 
 ```c
-    void complete(struct completion *c);
-    void complete_all(struct completion *c);
+    void complete(struct completion * c);
+    void complete_all(struct completion * c);
 ```
+
 completion只会唤醒一个等待线程，而complete_all允许唤醒所有等待线程。
 
 一个completion通常是一个单次设备；也就是说，它只会被使用一次然后被丢弃。但是如果仔细处理，completion结构也可以被重复使用。
@@ -133,8 +142,9 @@ completion只会唤醒一个等待线程，而complete_all允许唤醒所有等�
 还有一个特殊的函数：
 
 ```c
-    void complete_and_exit(struct completion *c, long retbval);
+    void complete_and_exit(struct completion * c, long retbval);
 ```
+
 #自旋锁
 信号量对互斥来讲是非常有用的工具，但它不是内核提供的唯一的这类工具。相反，大多数锁定通过称为“自旋锁(spinlock)”的机制实现。和信号量不同，自旋锁可在不能休眠的代码中使用，比如中断处理例程。在正常使用的情况下，自旋锁通常可以提供比信号量更高的性能。但是也带来了其他一组不同的使用限制。
 
@@ -153,20 +163,23 @@ completion只会唤醒一个等待线程，而complete_all允许唤醒所有等�
 或在运行时，调用下面的函数初始化：
 
 ```c
-    void spin_lock_init(spinlock_t *lock);
+    void spin_lock_init(spinlock_t * lock);
 ```
+
 在进入临界区之前，我们的代码必须调用下面的函数获得锁：
 
 ```c
-    void spin_lock(spinlock_t *lock);
+    void spin_lock(spinlock_t * lock);
 ```
+
 >注意：所有的自旋锁等待本质上都是不可中断的。一旦调用了spin_lock，在获得锁之前一直处于自旋状态。
 
 释放已经获得的锁，可将锁传递给下面的函数：
 
 ```c
-    void spin_unlock(spinlock_t *lock);
+    void spin_unlock(spinlock_t * lock);
 ```
+
 还有其他许多自旋锁函数。
 
 ##自旋锁和原子上下文
@@ -188,11 +201,12 @@ completion只会唤醒一个等待线程，而complete_all允许唤醒所有等�
 锁定一个自旋锁的函数实际有四个：
 
 ```c    
-    void spin_lock(spinlock_t *lock);
-    void spin_lock_irqsave(spinlock_t *lock, unsigned long flags);
-    void spin_lock_irq(spinlock_t *lock);
-    void spin_lock_bh(spinlock_t *lock);
+    void spin_lock(spinlock_t * lock);
+    void spin_lock_irqsave(spinlock_t * lock, unsigned long flags);
+    void spin_lock_irq(spinlock_t * lock);
+    void spin_lock_bh(spinlock_t * lock);
 ```
+
 spin_lock_irqsave会在获得自旋锁之前禁止中断（只在本地处理器上），而先前的中断保存在flags中。如果我们能确保在释放自旋锁时应启动中断，则可使用spin_lock_irq，最后，spin_lock_bh在获得锁之前禁止软件中断，但是会让硬件中断保持打开。
 
 如果我们拥有一个自旋锁，它可被运行在（硬件或软件）中断上下文中的代码获得，则必须使用某个禁止东段的spin_lock形式，如果我们不会再硬件中断中访问自旋锁，但可能在软件中断中（例如，以tasklet的形式运行的代码）中访问，则应该使用spin_lock_bh，一变在安全避免死锁的同时还能服务硬件中断。
@@ -200,20 +214,25 @@ spin_lock_irqsave会在获得自旋锁之前禁止中断（只在本地处理器
 释放自旋锁的方式也有四种，和获取对应：
 
 ```c
-    void spin_unlock(spinlock_t *lock);
-    void spin_unlock_irqstore(spinlock_t *lock, unsigned lng flags); //？
-    void spin_unlock_irq(spinlock_t *lock);
-    void spin_unlock_bh(spinlock_t *lock);
+    void spin_unlock(spinlock_t * lock);
+    void spin_unlock_irqstore(spinlock_t * lock, unsigned lng flags); //？
+    void spin_unlock_irq(spinlock_t * lock);
+    void spin_unlock_bh(spinlock_t * lock);
 ```
+
 >注意：我们必须在同一个函数中调用spin_lock
+
+```
 _irqsave和spin_unlock_irqstore，否则可能在某些架构上出现问题。
+```
 
 还有如下非阻塞的自旋锁操作：
 
 ```c
-    int spin_trylock(spinlock_t *lock);
-    int spin_trylock_bh(spinlock_t *lock);
+    int spin_trylock(spinlock_t * lock);
+    int spin_trylock_bh(spinlock_t * lock);
 ```
+
 ##读取者/写入者自旋锁
 内核提供自旋锁的读取者/写入者形式，具有rwlock_t类型，在<linux
 /spinlock.h>中定义。我们可以用下面两种方式声明和初始化它们：
@@ -224,12 +243,14 @@ _irqsave和spin_unlock_irqstore，否则可能在某些架构上出现问题。
     rwlock_t my_rwlock;
     rwlock_init(&my_rwlock);
 ```
+
 其他还有一系列函数和普通自旋锁类似，但是以read或write开头，如：
 
 ```c
-    void read_lock(rwlock_t *lock);
-    read_lock_irqsave(rwlock_t *lock, unsigned long flags) //？
+    void read_lock(rwlock_t * lock);
+    read_lock_irqsave(rwlock_t * lock, unsigned long flags) //？
 ```
+
 ##锁陷阱
 我们很难驾轻就熟的使用锁,以下是可能导致错误的东西。
 
@@ -281,6 +302,7 @@ atomitc_t变量在所有内核支持的架构上保存一个int值，但是由�
     int atomic_inc_return(inti i, atomic_t *v);
     int atomic_dec_return(inti i, atomic_t *v); //返回新的值给调用者
 ```
+
 ##位操作
 为了实现位操作，内核提供了一组可原子的修改和测试单个位的函数。因为整个操作但单个步骤中，因此不会受到中断。这些函数依赖具体的架构，因此在<asm/bitops.h>中声明。
 

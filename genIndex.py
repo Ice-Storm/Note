@@ -7,7 +7,7 @@ Head = \
     '=====\n' \
     '\n'
 
-for root, dirs, files in os.walk('./', topdown=False):
+for root, dirs, files in os.walk('./'):
     print root, dirs, files
     # 排除 images 文件夹
     if len(re.findall('/images$', root)) > 0:

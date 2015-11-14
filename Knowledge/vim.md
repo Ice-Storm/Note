@@ -9,3 +9,9 @@ Vim在git commit时出错，
 显示指定git的编辑器。
 
 >熟练使用Vim大部分时间处于normal模式。
+
+快速打开光标下文件名goto file：
+	
+	normal: gf
+
+

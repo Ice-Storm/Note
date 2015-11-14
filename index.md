@@ -13,6 +13,7 @@ Index
 * [OpenGL](OpenGL/index.md)
 * [Prolog](Prolog/index.md)
 * [Python](Python/index.md)
+* [RegEx](RegEx/index.md)
 * [Ruby](Ruby/index.md)
 * [Scala](Scala/index.md)
 * [编译原理](编译原理/index.md)

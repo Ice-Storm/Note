@@ -41,7 +41,8 @@ $ git push origin test:test              // 提交本地 test 分支作为远程
 创建新分支并立即切换到新分支：$ git checkout -b [name]
 直接检出远程分支：$ git checkout -b [name] [remoteName] (如：git checkout -b myNewBranch origin/dragon)
 删除分支：$ git branch -d [name] ---- -d选项只能删除已经参与了合并的分支，对于未有合并的分支是无法删除的。如果想强制删除一个分支，可以使用-D选项
-合并分支：$ git merge [name] ----将名称为[name]的分支与当前分支合并
+合并分支：$ git merge [branch] ----将名称为[branch]的分支与当前分支合并
+不论是否快进更新都创建注释,默认快进创建注释：$git merge --no-ff [branch]
 合并最后的2个提交：$ git rebase -i HEAD~2 ---- 数字2按需修改即可（如果需提交到远端$ git push -f origin master 慎用！）
 创建远程分支(本地分支push到远程)：$ git push origin [name]
 删除远程分支：$ git push origin :heads/[name] 或 $ git push origin :[name] 

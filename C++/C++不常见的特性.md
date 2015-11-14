@@ -195,4 +195,8 @@ private:
 ```
 sizeof(HoldsAnInt)==size(int)，这是所谓的EBO(empty base optimization; 空白基类最优化)，EBO一般只在单一继承中可行。
 
-#virtual继承
+# 基类访问子类保护函数
+不允许， 访问权限继承关系是单向的，子类上下文中可以访问父类以及祖父类的保护成员，反之不行。
+
+# virtual继承
+

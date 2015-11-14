@@ -21,6 +21,7 @@ Index
 * [Pycharm 简记](Pycharm 简记.md)
 * [Python的设计哲学](Python的设计哲学.md)
 * [Ruby的设计哲学](Ruby的设计哲学.md)
+* [ubuntu](ubuntu.md)
 * [vim](vim.md)
 * [元编程](元编程.md)
 * [函数式编程](函数式编程.md)

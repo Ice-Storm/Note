@@ -5,12 +5,14 @@ Index
 --------------------
 
 * [C++ ODB Library](C++ ODB Library.md)
+* [C++ 隐式调用](C++ 隐式调用.md)
 * [C++不常见的特性](C++不常见的特性.md)
 * [C++多线程](C++多线程.md)
 * [C++语言设计规则](C++语言设计规则.md)
 * [C++迭代器](C++迭代器.md)
 * [C-With-Classes](C-With-Classes.md)
 * [Effective C++](Effective C++.md)
+* [More Effective C++](More Effective C++.md)
 * [STL](STL.md)
 * [template](template.md)
 * [TODO](TODO.md)

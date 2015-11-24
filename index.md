@@ -16,6 +16,7 @@ Index
 * [RegEx](RegEx/index.md)
 * [Ruby](Ruby/index.md)
 * [Scala](Scala/index.md)
+* [算法和数据结构](算法和数据结构/index.md)
 * [编译原理](编译原理/index.md)
 * [设计模式](设计模式/index.md)
 

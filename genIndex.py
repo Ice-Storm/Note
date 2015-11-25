@@ -20,13 +20,28 @@ for root, dirs, files in os.walk('./'):
     # Mac OS X的默认情况下是“不区分大小写但保持大小写”
     # os.unlink(root + '/index.md')
     index = open(root + '/SUMMARY.md', 'w')
-    index.write(Head)
+    head = root.rsplit('/',1)[-1]
+    if head == '': 
+        head = Head
+    else:
+        head = '# %s\n\n' % head
+    index.write(head)
+    
+    if "README.md" in files:
+        index.write('* [%s](%s)\n' % ('Introduce', "README.md"))
+        files.remove("README.md")
+
     for d in dirs:
         # 排除隐藏文件夹和 images 文件夹
         if len(re.findall('^\.|^images$', d)) > 0:
             continue
         index.write('* [%s](%s/SUMMARY.md)\n' % (d, d))
-        
+        li = os.listdir(root + '/' + d)
+        for l in li:
+            if len(re.findall('^\.|^images$|^SUMMARY.md$', l)) > 0:
+                continue
+            index.write('\t* [%s](%s/%s)\n' % (l.rsplit('.', 1)[0], d, l))
+
     for f in files:
         # 排除目录和空白名字文件
         if f == 'SUMMARY.md' or f.strip() == '':

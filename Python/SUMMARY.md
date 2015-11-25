@@ -1,4 +1,4 @@
-# Summary
+# Python
 
 * [decorator](decorator.md)
 * [import](import.md)

@@ -1,8 +1,4 @@
-Index
-=====
-
-
---------------------
+# Summary
 
 * [decorator](decorator.md)
 * [import](import.md)

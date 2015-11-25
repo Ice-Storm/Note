@@ -1,8 +1,4 @@
-Index
-=====
-
-
---------------------
+# Summary
 
 * [corelib](corelib.md)
 * [Functional Programming](Functional Programming.md)

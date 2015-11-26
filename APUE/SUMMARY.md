@@ -1,3 +1,0 @@
-# APUE
-
-* [Socket](Socket.md)

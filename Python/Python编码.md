@@ -6,3 +6,6 @@ Python编码
 	import sys
 	reload(sys)
 	sys.setdefaultencoding('utf-8')
+
+python 对不同编码的字符串进行迭代时，是安照单元进行迭代，也就是"你好"分别遍历"你"和"好"两个字，而不是按照 byte 遍历。
+

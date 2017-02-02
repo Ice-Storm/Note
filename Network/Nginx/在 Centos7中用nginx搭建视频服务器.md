@@ -1,4 +1,4 @@
-nginx搭建视频服务器
+在 Centos7中用nginx搭建视频服务器
 =================
 
 1. nginx.conf中的user配置很重要，如果user和要访问的文件拥有者不同，很有可能出现404错误。
@@ -14,6 +14,7 @@ nginx搭建视频服务器
 
     firewall-cmd --add-service=http              (即时打开)
     firewall-cmd --permanent --add-service=http  (写入配置文件)
+    
 telnet 80端口成功登录，网页访问正常。
 5. 安装uwsgi时报错缺少Python.h，安转python-devel解决（缺少头文件一般是由于缺少对应的开发包）
 6. uwsgi使用的python版本和virtualenv环境很重要，最好直接调用virtualenv中的uwsgi
@@ -36,3 +37,4 @@ telnet 80端口成功登录，网页访问正常。
 ```
  
 8. uwsgi使用麻烦，可以考虑gunicorn代替。
+

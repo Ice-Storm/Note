@@ -62,3 +62,20 @@ delete b;
 纯虚析构函数也需要给出定义，因为根据上面所说的析构函数调用链，基类的析构函数也会被调用，因此必须要给出定义。
 
 
+## 类型转换函数
+```cpp
+class A {
+	operator string();
+}
+bool operator==(const char*, const string&);
+class string {
+	bool operator==(const char*);
+}
+
+A a;
+a == "ab" // compile failed!
+"ab" == a // compile sucess, convert 'a' to string
+```
+
+隐式转换只能转换一次，并且 C++ 会在函数中寻找合适的转换对象，而不会进入其他类寻找方法。如这里 *a* 虽然可以转换成 string 就能成功使用 *==* ，但编译器不会进入 *string* 寻找方法，也就无法找到这个转换路径，因此 *a=="ab"* 编译失败；编译器对 *"ab"==a* 能找到合适的函数，并最后成功找到转换路径。
+

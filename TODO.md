@@ -1,4 +1,4 @@
-#TODO List
+# TODO List
 
 - [x] Makefile 常用样例
 - [x] Python和Ruby不同的设计哲学
@@ -8,5 +8,5 @@
 - [ ] 泛型编程
 - [ ] 元编程
 - [ ] mixin
-- [ ] 完成 gitbook 目录自动生成
+- [x] 完成 gitbook 目录自动生成
 

@@ -6,7 +6,6 @@ Python对不同作用域访问的同一个变量会创建不同的cell对象。
 Python的decorator可以起到和Ruby中使用block类似的作用。
 #Managing Calls and Instances
 #Managing Functions and Classes
-
 #Coding Function Decorators
 ##Tracing Calls
 ##State Information Retention Options
@@ -80,3 +79,5 @@ class C(object):
     def f(arg1, arg2, ...):
         pass
 ```
+
+
